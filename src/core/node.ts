@@ -1,5 +1,5 @@
 import { yellow } from 'kolorist';
-import { getImportName, logger } from '../shared';
+import { getImportName, logger, normalizePath } from '../shared';
 import { NOT_FOUND_ROUTE_NAME, NO_FILE_INODE, ROOT_ROUTE_NAME } from '../constants';
 import type {
   AutoRouterNode,
@@ -25,7 +25,7 @@ export function resolveNodes(globs: ResolvedGlob[], options: ParsedAutoRouterOpt
 }
 
 /**
- * 排序节点名称
+ * Sort node names
  *
  * @param preName
  * @param curName
@@ -162,7 +162,9 @@ function resolveCustomNode(options: ParsedAutoRouterOptions) {
 function resolvePath(resolvedGlob: ResolvedGlob, extension: string[]) {
   const { glob } = resolvedGlob;
 
-  let globPath = glob;
+  // Ensure using forward slashes
+  let globPath = normalizePath(glob);
+
   if (!globPath.startsWith('/')) {
     globPath = `/${globPath}`;
   }
@@ -181,7 +183,7 @@ function resolvePath(resolvedGlob: ResolvedGlob, extension: string[]) {
 }
 
 /**
- * 解析分组节点
+ * Resolve group node
  *
  * @example
  *   `src/pages/(builtin)/login/index.vue`;
@@ -203,7 +205,7 @@ function resolveGroupNode(node: AutoRouterNode) {
 }
 
 /**
- * 解析参数节点
+ * Resolve parameter node
  *
  * @example
  *   `src/pages/list/[id].vue`;
@@ -308,7 +310,7 @@ function filterConflictNodes(nodes: AutoRouterNode[]) {
   });
 
   if (conflictNodes.length > 0) {
-    logger.warn(`${yellow('conflict routes, use the first one by default【路由冲突，默认取第一个】: ')}`);
+    logger.warn(`${yellow('conflict routes, use the first one by default: ')}`);
     logger.table(
       conflictNodes.map(item => ({
         name: item.name,

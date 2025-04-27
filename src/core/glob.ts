@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { stat } from 'node:fs/promises';
 import { globSync } from 'tinyglobby';
-import { resolveImportPath } from '../shared';
+import { normalizePath, resolveImportPath } from '../shared';
 import type { ParsedAutoRouterOptions, ResolvedGlob } from '../types';
 
 export async function resolveGlobs(options: ParsedAutoRouterOptions) {
@@ -24,7 +24,7 @@ export async function resolveGlobs(options: ParsedAutoRouterOptions) {
 
       return {
         pageDir: dir,
-        glob,
+        glob: normalizePath(glob),
         filePath,
         importPath
       };
